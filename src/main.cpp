@@ -1,5 +1,6 @@
 #include "main.h"
 #include "devices.hpp"
+#include "autons.hpp"
 #include "lemlib/api.hpp" // IWYU pragma: keep
 /**
  * A callback function for LLEMU's center button.
@@ -7,15 +8,6 @@
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() {
-  static bool pressed = false;
-  pressed = !pressed;
-  if (pressed) {
-    pros::lcd::set_text(2, "I was pressed!");
-  } else {
-    pros::lcd::clear_line(2);
-  }
-}
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -23,12 +15,20 @@ void on_center_button() {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {
+void initialize()
+{
   pros::lcd::initialize();
-  pros::lcd::set_text(1, "Hello PROS User!");
+  chassis.setPose(0, 0, 0);
   chassis.calibrate();
-
-  pros::lcd::register_btn1_cb(on_center_button);
+  pros::delay(10);
+  pros::Task show_pos([&]()
+                      {
+    while(true) {
+      pros::screen::print(TEXT_MEDIUM, 0, "X: %f", chassis.getPose().x);
+      pros::screen::print(TEXT_MEDIUM, 1, "Y: %f", chassis.getPose().y);
+      pros::screen::print(TEXT_MEDIUM, 2, "Theta: %f", chassis.getPose().theta);
+      pros::delay(20);
+    } });
 }
 
 /**
@@ -60,13 +60,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-  while (true) {
-    chassis.tank(100, 100);
-    pros::delay(1000);
-    chassis.tank(-100, -100);
-    pros::delay(1000);
-  }
+void autonomous()
+{
+  left_centre();
 }
 
 /**
@@ -82,31 +78,42 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
+void opcontrol()
+{
   pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
-  while (true) {
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+  while (true)
+  {
+    int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+    int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+    // move the robot
+    chassis.arcade(leftY, rightX);
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
+    {
       intake.move(127);
     }
-    else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
+    {
       intake.move(-127);
     }
-    else {
+    else
+    {
       intake.move(0);
     }
 
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
+    {
       hood.toggle();
     }
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)){
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
+    {
       scraper.toggle();
     }
-    int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-    int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-
-    // move the robot
-    chassis.arcade(leftY, rightX);
-    pros::delay(25);
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT))
+    {
+      scraper.toggle();
+      hood.toggle();
+    }
+    pros::delay(20);
   }
 }
