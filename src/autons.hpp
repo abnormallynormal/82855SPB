@@ -1,4 +1,4 @@
 #pragma once
-void right_side_22();
-void left_side_22();
-void centre_long_29();
+void right_side();
+void right_side_fucked();
+void left_side();

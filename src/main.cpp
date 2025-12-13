@@ -70,11 +70,7 @@ void competition_initialize() {}
  */
 void autonomous()
 {
-  chassis.setPose(0,0,0);
-  chassis.moveToPoint(0,24,2500);
-  chassis.moveToPoint(0,0, 2500, {.forwards = false});
-  chassis.moveToPoint(0,24,2500);
-  chassis.moveToPoint(0,0, 2500, {.forwards = false});
+  right_side_fucked();
   // solo_awp();
 }
 
