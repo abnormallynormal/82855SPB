@@ -19,6 +19,8 @@ void initialize()
 {
   pros::lcd::initialize();
   chassis.setPose(0, 0, 0);
+  left_motors.set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
+  right_motors.set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
   chassis.calibrate();
   pros::delay(10);
   pros::Task show_pos([&]()
@@ -27,6 +29,12 @@ void initialize()
       pros::screen::print(TEXT_MEDIUM, 0, "X: %f", chassis.getPose().x);
       pros::screen::print(TEXT_MEDIUM, 1, "Y: %f", chassis.getPose().y);
       pros::screen::print(TEXT_MEDIUM, 2, "Theta: %f", chassis.getPose().theta);
+      pros::screen::print(TEXT_MEDIUM, 3, "Left motor 1: %f ", left_motors.get_position_all()[0]);
+      pros::screen::print(TEXT_MEDIUM, 4, "Left motor 2: %f ", left_motors.get_position_all()[1]);
+      pros::screen::print(TEXT_MEDIUM, 5, "Left motor 3: %f ", left_motors.get_position_all()[2]);
+      pros::screen::print(TEXT_MEDIUM, 6, "right motor 1: %f ", right_motors.get_position_all()[0]);
+      pros::screen::print(TEXT_MEDIUM, 7, "right motor 2: %f ", right_motors.get_position_all()[1]);
+      pros::screen::print(TEXT_MEDIUM, 8, "right motor 3: %f ", right_motors.get_position_all()[2]);
       pros::delay(20);
     } });
 }
@@ -62,7 +70,12 @@ void competition_initialize() {}
  */
 void autonomous()
 {
-  left_centre();
+  chassis.setPose(0,0,0);
+  chassis.moveToPoint(0,24,2500);
+  chassis.moveToPoint(0,0, 2500, {.forwards = false});
+  chassis.moveToPoint(0,24,2500);
+  chassis.moveToPoint(0,0, 2500, {.forwards = false});
+  // solo_awp();
 }
 
 /**
@@ -81,7 +94,8 @@ void autonomous()
 void opcontrol()
 {
   pros::Controller controller(pros::E_CONTROLLER_MASTER);
-
+  odomLift.toggle();
+  bool bypassDown = false;
   while (true)
   {
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
@@ -90,29 +104,68 @@ void opcontrol()
     chassis.arcade(leftY, rightX);
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
     {
-      intake.move(127);
+      firstStage.move(127);
+      if (bypassDown)
+      {
+        secondStage.move(-127);
+      }
+      else
+      {
+        secondStage.move(127);
+      }
+      // pros::delay(100);
+      // if (firstStage.get_actual_velocity() < 100 || secondStage.get_actual_velocity() < 100)
+      // {
+      //   firstStage.move(-127);
+      //   secondStage.move(-127);
+      //   pros::delay(50);
+      // }
     }
     else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
     {
-      intake.move(-127);
+      firstStage.move(-127);
+      secondStage.move(-127);
+    }
+    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
+    {
+      firstStage.move(127);
+      // pros::delay(100);
+      // if(firstStage.get_actual_velocity() < 100){
+      //   firstStage.move(-127);
+
+      //   pros::delay(50);
+      // }
+    }
+    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
+    {
+      firstStage.move(-127);
     }
     else
     {
-      intake.move(0);
+      firstStage.move(0);
+      secondStage.move(0);
     }
 
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
     {
-      hood.toggle();
+      wing.toggle();
     }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
     {
       scraper.toggle();
     }
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP))
+    {
+      odomLift.toggle();
+    }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT))
     {
-      scraper.toggle();
-      hood.toggle();
+      bypass.toggle();
+      bypassDown = !bypassDown;
+    }
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
+    {
+      park.toggle();
     }
     pros::delay(20);
   }

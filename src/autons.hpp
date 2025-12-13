@@ -1,8 +1,4 @@
- #pragma once
-
-// Declarations for autonomous routines
-// Keep these minimal so other translation units can call them without
-// including the implementation .cpp file.
-
-void right_centre();
-void left_centre();
+#pragma once
+void right_side_22();
+void left_side_22();
+void centre_long_29();
