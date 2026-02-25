@@ -1,98 +1,104 @@
 #include "autons.hpp"
 #include "devices.hpp"
-void right_side(){
-  chassis.setPose(-50, -10, 120);
-  chassis.moveToPoint(-12,-30,1200);
-  firstStage.move(127);
-  chassis.waitUntil(15);
-  scraper.toggle();
-  chassis.turnToHeading(245,750);
-  chassis.moveToPoint(-44,-49.5,1000);
-  chassis.turnToHeading(280,500);
-  chassis.moveToPoint(-74, -49.25, 1400, {.maxSpeed=55});
-  chassis.moveToPoint(-24,-50.5, 1200, {.forwards = false});
-  chassis.waitUntilDone();
-  secondStage.move(127);
-  pros::delay(400);
-  firstStage.move(-127);
-  secondStage.move(-127);
-  pros::delay(200);
-  scraper.toggle();
-  firstStage.move(127);
-  secondStage.move(127);
-  pros::delay(1750);
-  chassis.tank(60,60);
-  pros::delay(200);
-  chassis.tank(0,0);
-  chassis.turnToHeading(345, 400);
-  chassis.moveToPoint(-27,-33.75, 600);
-  chassis.turnToHeading(310,500);
-  chassis.moveToPoint(-10,-41,400, {.forwards = false});
-  wing.toggle();
-  chassis.moveToPoint(-10,-40.5,500, {.forwards= false, .maxSpeed=80});
-  
-}
-void right_side_fucked()
+#include "macros.hpp"
+void skills()
 {
-  chassis.setPose(-50, -10, 120);
-  chassis.moveToPoint(-12, -32, 1200);
-  firstStage.move(127);
-  chassis.waitUntil(15);
-  scraper.toggle();
-  chassis.turnToHeading(245, 750);
-  chassis.moveToPoint(-44, -49.5, 1000);
-  chassis.turnToHeading(280, 500);
-  chassis.moveToPoint(-74, -50, 1400, {.maxSpeed = 55});
-  chassis.moveToPoint(-24, -52.5, 1200, {.forwards = false});
+  // pros::Controller controller(pros::E_CONTROLLER_MASTER);
+
+  chassis.setPose(-48, 15, 64);
+  index();
+  chassis.moveToPoint(-25, 22.67, 700);
+  chassis.turnToHeading(290, 500);
+  chassis.moveToPoint(-10, 5, 1000, {.forwards = false});
   chassis.waitUntilDone();
-  secondStage.move(127);
-  pros::delay(400);
-  firstStage.move(-127);
-  secondStage.move(-127);
-  pros::delay(200);
-  scraper.toggle();
   firstStage.move(127);
-  secondStage.move(127);
-  pros::delay(1750);
-  chassis.tank(60, 60);
-  pros::delay(200);
-  chassis.tank(0, 0);
-  chassis.turnToHeading(345, 400);
-  chassis.moveToPoint(-27, -36, 600);
-  chassis.turnToHeading(310, 500);
-  chassis.moveToPoint(-10, -43.5, 400, {.forwards = false});
+  secondStage.move(100);
+  pros::delay(1000);
+  chassis.moveToPoint(-43, 44, 1000);
+  index();
+  scraper.toggle();
+  midGoal.toggle();
   wing.toggle();
-  chassis.moveToPoint(-10, -42.5, 500, {.forwards = false, .maxSpeed = 80});
-}
-void left_side(){
-  chassis.setPose(-50, 10, 60);
-  chassis.moveToPoint(-12,30,1200);
-  firstStage.move(127);
-  chassis.waitUntil(15);
-  scraper.toggle();
-  chassis.turnToHeading(300,750);
-  chassis.moveToPoint(-44,49.5,1000);
-  chassis.turnToHeading(270,250);
-  chassis.moveToPoint(-75, 49.5, 1400, {.maxSpeed=60});
-  chassis.moveToPoint(-24,56, 1200, {.forwards = false});
+  chassis.turnToHeading(270, 400);
+  chassis.moveToPoint(-70, 44, 3000, {.maxSpeed = 55});
   chassis.waitUntilDone();
-  secondStage.move(127);
-  pros::delay(400);
-  firstStage.move(-127);
-  secondStage.move(-127);
-  pros::delay(200);
+  chassis.moveToPoint(-44, 45, 1000, {.forwards = false});
+  chassis.turnToHeading(180, 750);
+  chassis.moveToPoint(-40, 56.23, 1000, {.forwards = false});
   scraper.toggle();
-  firstStage.move(127);
-  secondStage.move(127);
-  pros::delay(1750);
-  chassis.tank(60,60);
-  pros::delay(200);
+
+  chassis.turnToHeading(270, 1000);
+  // chassis.moveToPoint(-48, 60, 3000);
+  lemlib::Pose temp = chassis.getPose();
+  // // chassis.setPose(-64, 47, temp.theta);
+  // // pros::delay(10);
+  // // chassis.moveToPoint(-40, 60, 1000, {.forwards = false});
+  // chassis.turnToHeading(260, 500);
+  chassis.moveToPoint(44, 51.2, 2000, {.forwards = false});
+  firstStage.move(0);
+  secondStage.move(0);
+  chassis.turnToHeading(0, 500);
+  chassis.moveToPoint(44, 40, 1000, {.forwards = false});
+  chassis.turnToHeading(102, 500);
+  chassis.moveToPoint(22, 40, 1000, {.forwards = false});
+  chassis.waitUntilDone();
+  scraper.toggle();
+  score(2400);
+  temp = chassis.getPose();
+  chassis.setPose(24,48,temp.theta);
+  chassis.moveToPoint(72, 45.67, 4000, {.maxSpeed = 55});
+  index();
+  chassis.moveToPoint(22, 47.2, 1000, {.forwards = false});
+  // chassis.waitUntil(48);
+  chassis.waitUntilDone();
+  score(2500);
+
+
+
+  temp = chassis.getPose();
+  chassis.setPose(26, 48, temp.theta);
+  scraper.toggle();
+  chassis.moveToPoint(34, 48, 500);
+  chassis.turnToHeading(180, 500);
+  chassis.moveToPoint(38, -0.5, 1000);
+  chassis.turnToHeading(90, 500);
+  chassis.waitUntilDone();
+  index();
+  chassis.tank(67, 67);
+  pros::delay(1000);
+  chassis.tank(42,42);
+  // while (std::abs(left_motors.get_actual_velocity()) > 600 * 100 / 127 && std::abs(right_motors.get_actual_velocity()) > 600 * 100 / 127)
+  // {
+  //   pros::delay(10);
+  // }
+  // while (std::abs(left_motors.get_actual_velocity()) > 600 * 100 / 127 && std::abs(right_motors.get_actual_velocity()) > 600 * 100 / 127)
+  // {
+  //   pros::delay(10);
+  // }
+  pros::delay(2000);
+  chassis.tank(-90, -90);
+  pros::delay(300);
   chassis.tank(0,0);
-  chassis.turnToHeading(350, 400);
-  chassis.moveToPoint(-40,72, 600);
-  chassis.turnToHeading(260,500);
-  chassis.moveToPoint(-10,68,400, {.forwards = false});
-  wing.toggle();
-  chassis.moveToPoint(-7.5,69,500, {.forwards= false, .maxSpeed=80});
-  
+  pros::delay(150);
+  while (std::abs(left_motors.get_actual_velocity()) < 600 * 95 / 127 && std::abs(right_motors.get_actual_velocity()) < 600 * 95 / 127)
+  {
+    pros::delay(10);
+  }
+  chassis.tank(67, 67);
+  pros::delay(700);
+  for(int i = 0;i<7;i++){
+    chassis.tank(80,30);
+    pros::delay(150);
+    chassis.tank(30,80);
+    pros::delay(150);
+    chassis.tank(-80,-80);
+    pros::delay(150);
+  }
+  chassis.tank(-90, -90);
+  pros::delay(400);
+  while (std::abs(left_motors.get_actual_velocity()) < 600 * 65 / 127 && std::abs(right_motors.get_actual_velocity()) < 600 * 65 / 127)
+  {
+    pros::delay(10);
+  }
+  chassis.tank(0,0);
 }

@@ -23,6 +23,7 @@ void initialize()
   right_motors.set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
   chassis.calibrate();
   pros::delay(10);
+  chassis.setPose(24,48,90);
   pros::Task show_pos([&]()
                       {
     while(true) {
@@ -30,11 +31,6 @@ void initialize()
       pros::screen::print(TEXT_MEDIUM, 1, "Y: %f", chassis.getPose().y);
       pros::screen::print(TEXT_MEDIUM, 2, "Theta: %f", chassis.getPose().theta);
       pros::screen::print(TEXT_MEDIUM, 3, "Left motor 1: %f ", left_motors.get_position_all()[0]);
-      pros::screen::print(TEXT_MEDIUM, 4, "Left motor 2: %f ", left_motors.get_position_all()[1]);
-      pros::screen::print(TEXT_MEDIUM, 5, "Left motor 3: %f ", left_motors.get_position_all()[2]);
-      pros::screen::print(TEXT_MEDIUM, 6, "right motor 1: %f ", right_motors.get_position_all()[0]);
-      pros::screen::print(TEXT_MEDIUM, 7, "right motor 2: %f ", right_motors.get_position_all()[1]);
-      pros::screen::print(TEXT_MEDIUM, 8, "right motor 3: %f ", right_motors.get_position_all()[2]);
       pros::delay(20);
     } });
 }
@@ -70,7 +66,33 @@ void competition_initialize() {}
  */
 void autonomous()
 {
-  right_side_fucked();
+  pros::Controller controller(pros::E_CONTROLLER_MASTER);
+
+  // Task to display pose on controller screen during auton
+  // pros::Task controller_display([&]()
+  //                               {
+  //   while (true) {
+  //     lemlib::Pose pose = chassis.getPose();
+  //     controller.print(0, 0, "X:%.0f Y:%.0f H:%.0f", pose.x, pose.y, pose.theta);
+  //     pros::delay(50); // Update every 50ms (controller screen is slow)
+  //   } });
+  // chassis.setPose(0,0,0);
+  // chassis.turnToHeading(180,2500);
+  // chassis.turnToHeading(0,2500);
+  // chassis.turnToHeading(180,2500);
+  // chassis.turnToHeading(0,2500);
+  // chassis.turnToHeading(180,2500);
+  // chassis.turnToHeading(0,2500);
+
+  // chassis.moveToPoint(0,24,2500);
+  // chassis.moveToPoint(0,0,2500, {.forwards = false});
+  // chassis.moveToPoint(0, 24, 2500);
+  // chassis.moveToPoint(0, 0, 2500, {.forwards = false});
+  // chassis.moveToPoint(0, 24, 2500);
+  // chassis.moveToPoint(0, 0, 2500, {.forwards = false});
+
+  
+  skills();
   // solo_awp();
 }
 
@@ -90,24 +112,46 @@ void autonomous()
 void opcontrol()
 {
   pros::Controller controller(pros::E_CONTROLLER_MASTER);
-  odomLift.toggle();
-  bool bypassDown = false;
+  pros::Task controller_display([&]()
+                                {
+    while (true) {
+      lemlib::Pose pose = chassis.getPose();
+      // controller.print(0, 0, "Voltage: %.1f", left_motors.get);
+      pros::delay(50); // Update every 50ms (controller screen is slow)
+    } });
+  bool first = true;
+  bool second = true;
   while (true)
   {
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
     // move the robot
     chassis.arcade(leftY, rightX);
+    // if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
+    // {
+    //   fast = !fast;
+    // }
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
     {
-      firstStage.move(127);
-      if (bypassDown)
+      if (midGoal.is_extended())
       {
-        secondStage.move(-127);
+        firstStage.move(127);
+        secondStage.move(127);
       }
       else
       {
-        secondStage.move(127);
+        if (first)
+        {
+          firstStage.move(127);
+          secondStage.move(100);
+          pros::delay(250);
+          first = false;
+        }
+        else
+        {
+          firstStage.move(127);
+          secondStage.move(30);
+        }
       }
       // pros::delay(100);
       // if (firstStage.get_actual_velocity() < 100 || secondStage.get_actual_velocity() < 100)
@@ -119,12 +163,31 @@ void opcontrol()
     }
     else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
     {
-      firstStage.move(-127);
-      secondStage.move(-127);
+      if (!intakeLift.is_extended())
+      {
+        firstStage.move(-127);
+        secondStage.move(-127);
+      }
+      else
+      {
+        if (second)
+        {
+          firstStage.move(-80);
+          secondStage.move(-127);
+          pros::delay(250);
+          first = false;
+        }
+        else
+        {
+          firstStage.move(-45);
+          secondStage.move(-127);
+        }
+      }
     }
     else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
     {
       firstStage.move(127);
+      secondStage.move(-127);
       // pros::delay(100);
       // if(firstStage.get_actual_velocity() < 100){
       //   firstStage.move(-127);
@@ -135,6 +198,7 @@ void opcontrol()
     else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
     {
       firstStage.move(-127);
+      secondStage.move(-127);
     }
     else
     {
@@ -150,18 +214,13 @@ void opcontrol()
     {
       scraper.toggle();
     }
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP))
-    {
-      odomLift.toggle();
-    }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT))
     {
-      bypass.toggle();
-      bypassDown = !bypassDown;
+      midGoal.toggle();
     }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
     {
-      park.toggle();
+      intakeLift.toggle();
     }
     pros::delay(20);
   }
