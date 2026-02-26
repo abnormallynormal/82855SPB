@@ -44,6 +44,8 @@ inline lemlib::Drivetrain
                2                           // horizontal drift is 2 (for now)
     );
 inline pros::Rotation vertical_encoder(14);
+inline pros::Distance left(2);
+inline pros::Distance right(9);
 inline pros::adi::Pneumatics midGoal('A', false); // c
 inline pros::adi::Pneumatics scraper('D', false); // e
 inline pros::adi::Pneumatics wing('B', false);

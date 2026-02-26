@@ -18,11 +18,12 @@
 void initialize()
 {
   pros::lcd::initialize();
-  chassis.setPose(0, 0, 0);
+  // chassis.setPose(0, 0,/ 0);
   left_motors.set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
   right_motors.set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
   chassis.calibrate();
-  pros::delay(10);
+  imu.set_data_rate(5);
+  pros::delay(2000);  // Wait for IMU calibration to complete
   chassis.setPose(24,48,90);
   pros::Task show_pos([&]()
                       {
@@ -30,7 +31,11 @@ void initialize()
       pros::screen::print(TEXT_MEDIUM, 0, "X: %f", chassis.getPose().x);
       pros::screen::print(TEXT_MEDIUM, 1, "Y: %f", chassis.getPose().y);
       pros::screen::print(TEXT_MEDIUM, 2, "Theta: %f", chassis.getPose().theta);
-      pros::screen::print(TEXT_MEDIUM, 3, "Left motor 1: %f ", left_motors.get_position_all()[0]);
+      int32_t leftDist = left.get_distance();
+      int32_t rightDist = right.get_distance();
+      pros::screen::print(TEXT_MEDIUM, 3, "Left: %d mm", leftDist);
+      pros::screen::print(TEXT_MEDIUM, 4, "Right: %d mm", rightDist);
+      pros::screen::print(TEXT_MEDIUM, 5, "heading: %f ", imu.get_heading());
       pros::delay(20);
     } });
 }
@@ -69,27 +74,13 @@ void autonomous()
   pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
   // Task to display pose on controller screen during auton
-  // pros::Task controller_display([&]()
-  //                               {
-  //   while (true) {
-  //     lemlib::Pose pose = chassis.getPose();
-  //     controller.print(0, 0, "X:%.0f Y:%.0f H:%.0f", pose.x, pose.y, pose.theta);
-  //     pros::delay(50); // Update every 50ms (controller screen is slow)
-  //   } });
-  // chassis.setPose(0,0,0);
-  // chassis.turnToHeading(180,2500);
-  // chassis.turnToHeading(0,2500);
-  // chassis.turnToHeading(180,2500);
-  // chassis.turnToHeading(0,2500);
-  // chassis.turnToHeading(180,2500);
-  // chassis.turnToHeading(0,2500);
-
-  // chassis.moveToPoint(0,24,2500);
-  // chassis.moveToPoint(0,0,2500, {.forwards = false});
-  // chassis.moveToPoint(0, 24, 2500);
-  // chassis.moveToPoint(0, 0, 2500, {.forwards = false});
-  // chassis.moveToPoint(0, 24, 2500);
-  // chassis.moveToPoint(0, 0, 2500, {.forwards = false});
+  pros::Task controller_display([&]()
+                                {
+    while (true) {
+      lemlib::Pose pose = chassis.getPose();
+      controller.print(0, 0, "X:%.1f Y:%.1f T:%.0f", pose.x, pose.y, pose.theta);
+      pros::delay(50); // Update every 50ms (controller screen is slow)
+    } });
 
   
   skills();
@@ -112,6 +103,7 @@ void autonomous()
 void opcontrol()
 {
   pros::Controller controller(pros::E_CONTROLLER_MASTER);
+  
   pros::Task controller_display([&]()
                                 {
     while (true) {
