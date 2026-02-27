@@ -23,7 +23,7 @@ void initialize()
   right_motors.set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
   chassis.calibrate();
   imu.set_data_rate(5);
-  pros::delay(2000);  // Wait for IMU calibration to complete
+  // pros::delay(2000);  // Wait for IMU calibration to complete
   chassis.setPose(24,48,90);
   pros::Task show_pos([&]()
                       {
@@ -135,14 +135,14 @@ void opcontrol()
         if (first)
         {
           firstStage.move(127);
-          secondStage.move(100);
+          secondStage.move(70);
           pros::delay(250);
           first = false;
         }
         else
         {
           firstStage.move(127);
-          secondStage.move(30);
+          secondStage.move(40);
         }
       }
       // pros::delay(100);
