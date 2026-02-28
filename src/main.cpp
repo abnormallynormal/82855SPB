@@ -24,7 +24,7 @@ void initialize()
   chassis.calibrate();
   imu.set_data_rate(5);
   // pros::delay(2000);  // Wait for IMU calibration to complete
-  chassis.setPose(24,48,90);
+  chassis.setPose(-48,15,64);
   pros::Task show_pos([&]()
                       {
     while(true) {
@@ -73,16 +73,23 @@ void autonomous()
 {
   pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
-  // Task to display pose on controller screen during auton
-  pros::Task controller_display([&]()
-                                {
-    while (true) {
-      lemlib::Pose pose = chassis.getPose();
-      controller.print(0, 0, "X:%.1f Y:%.1f T:%.0f", pose.x, pose.y, pose.theta);
-      pros::delay(50); // Update every 50ms (controller screen is slow)
-    } });
+  // // Task to display pose on controller screen during auton
+  // pros::Task controller_display([&]()
+  //                               {
+  //   while (true) {
+  //     lemlib::Pose pose = chassis.getPose();
+  //     controller.print(0, 0, "X:%.1f Y:%.1f T:%.0f", pose.x, pose.y, pose.theta);
+  //     pros::delay(50); // Update every 50ms (controller screen is slow)
+  //   } });
 
   
+    
+  // chassis.setPose(0,0,0);
+  // chassis.moveToPoint(0,72,5000, {.maxSpeed = 80});
+  // chassis.moveToPoint(0,0,2500, {.forwards = false, .maxSpeed = 80});
+  // chassis.moveToPoint(0, 72, 5000, {.maxSpeed = 80});
+  // chassis.moveToPoint(0, 0, 2500, {.forwards = false, .maxSpeed = 80});
+
   skills();
   // solo_awp();
 }
@@ -164,14 +171,14 @@ void opcontrol()
       {
         if (second)
         {
-          firstStage.move(-80);
+          firstStage.move(-60);
           secondStage.move(-127);
           pros::delay(250);
           first = false;
         }
         else
         {
-          firstStage.move(-45);
+          firstStage.move(-40);
           secondStage.move(-127);
         }
       }

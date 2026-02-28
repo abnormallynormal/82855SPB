@@ -8,60 +8,66 @@ void skills()
 
   chassis.setPose(-48, 15, 64);
   index();
-  // get mid goal
+  // get 1 ball to score in mid goal
   chassis.moveToPoint(-25, 21.5, 700);
-  chassis.turnToHeading(290, 500);
-  chassis.moveToPoint(-10, 4, 1000, {.forwards = false});
-  chassis.waitUntilDone();
+  chassis.turnToHeading(300, 500);
+  chassis.moveToPoint(-12, 5.2, 800, {.forwards = false});
+  pros::delay(400);
   firstStage.move(127);
-  secondStage.move(100);
-  pros::delay(1000);
-  // matchload 1
-  chassis.moveToPoint(-43, 44.4, 1000);
+  secondStage.move(50);
+  pros::delay(600);
+  // go to matchload 1
+  chassis.moveToPoint(-43, 41.5, 1000);
   index();
+  pros::delay(200);
   scraper.toggle();
   midGoal.toggle();
   wing.toggle();
   chassis.turnToHeading(270, 400);
-  chassis.moveToPoint(-70, 44.4, 3000, {.maxSpeed = 55});
+  //matchload
+  chassis.moveToPoint(-70, 41.5, 2000, {.maxSpeed = 55});
   chassis.waitUntilDone();
-  chassis.moveToPoint(-44, 45, 800, {.forwards = false});
-  chassis.turnToHeading(180, 700);
-  chassis.moveToPoint(-40, 60, 800, {.forwards = false});
+  // cross to other side
+  chassis.moveToPoint(-44, 41.5, 600, {.forwards = false});
+  chassis.turnToHeading(245, 1000);
+  chassis.moveToPoint(-22, 54, 600, {.forwards = false});
   scraper.toggle();
 
-  chassis.turnToHeading(270, 750);
+  chassis.turnToHeading(275, 500);
   lemlib::Pose temp = chassis.getPose();
-  // cross
-  chassis.moveToPoint(39, 49, 2000, {.forwards = false});
+  
+  chassis.moveToPoint(38, 51, 1800, {.forwards = false, .maxSpeed = 80});
   firstStage.move(0);
   secondStage.move(0);
-  chassis.turnToHeading(0, 500);
-  chassis.moveToPoint(39, 41.67, 1000, {.forwards = false});
-  chassis.turnToHeading(95, 500);
-  chassis.moveToPoint(22, 43, 1000, {.forwards = false});
+  //begin aligning to long goal
+  chassis.turnToHeading(315, 1000);
+  chassis.moveToPoint(46, 42, 650, {.forwards = false}); //was 42
+  chassis.turnToHeading(90, 800);
+  chassis.moveToPoint(22, 46, 800, {.forwards = false});
   chassis.waitUntilDone();
   scraper.toggle();
-  // score
-  score(2400);
+  // score on long goal
+  score(2000);
   temp = chassis.getPose();
-  // matchload
+  // matchload 2
   chassis.setPose(24, 48, temp.theta);
   chassis.moveToPoint(30, 48, 400);
-  chassis.turnToHeading(90, 200);
-  chassis.moveToPoint(72, 46, 4000, {.maxSpeed = 55});
+  chassis.turnToHeading(100, 200);
+  chassis.moveToPoint(72, 44.5, 2500, {.maxSpeed = 55});
   index();
-  // score
-  chassis.moveToPoint(22, 48, 1000, {.forwards = false});
+  // score on long goal
+  chassis.moveToPoint(22, 47, 1000, {.forwards = false});
   chassis.waitUntilDone();
-  score(2500);
+  score(2000);
   // align to park
   temp = chassis.getPose();
   chassis.setPose(26, 48, temp.theta);
+  firstStage.move(127);
+  secondStage.move(127);
   scraper.toggle();
   chassis.moveToPoint(34, 48, 500);
   chassis.turnToHeading(180, 500);
-  chassis.moveToPoint(38, -2, 1000);
+  chassis.moveToPoint(34, -2.5, 1000);
   chassis.turnToHeading(90, 400);
   chassis.waitUntilDone();
   index();
@@ -72,8 +78,8 @@ void skills()
   {
     pros::delay(10);
   }
-  chassis.tank(50, 50);
-  pros::delay(2000);
+  chassis.tank(55,55);
+  pros::delay(1000); // was 2000
   chassis.tank(-35, -35);
   pros::delay(500);
   chassis.tank(35, 35);
@@ -91,7 +97,7 @@ void skills()
   chassis.tank(85, 85);
   // rape mech
   pros::delay(700);
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 5; i++) // was 6
   {
     chassis.tank(80, 30);
     pros::delay(150);
@@ -139,93 +145,90 @@ void skills()
   controller.print(0, 0, "L:%d R:%d H:%.0f", leftDist, rightDist, heading);
   controller.print(1, 0, "Y:%.1f (%.1f,%.1f)", y_position, y_from_left, y_from_right);
 
-//get one ball
+//get one ball to score in mid goal
   chassis.setPose(48, y_position, currentPose.theta);
   pros::delay(100);
-  chassis.turnToHeading(215, 1000);
-  chassis.moveToPoint(34, -23, 1000);
+  chassis.turnToHeading(215, 700);
+  chassis.moveToPoint(31, -20.3, 1000);
   chassis.turnToHeading(90, 400);
-  chassis.moveToPoint(24, -21, 400, {.forwards = false});
-  chassis.turnToHeading(135, 1000);
+  //align with mid goal
+  chassis.moveToPoint(22, -23, 400, {.forwards = false});
+  chassis.turnToHeading(135, 500);
   //score the 7 balls
-  chassis.moveToPoint(15, -8, 750, {.forwards = false});
-  chassis.waitUntil(12);
+  pros::delay(300);
   midGoal.toggle();
-  chassis.waitUntilDone();
-  pros::delay(100);
+
+  chassis.moveToPoint(13.5, -7, 750, {.forwards = false});
+  // chassis.waitUntil(2); // was 12
+  // pros::delay(300);
+  // chassis.waitUntilDone();
+  pros::delay(300);
   firstStage.move(100);
   secondStage.move(35);
-  pros::delay(2500);
+  pros::delay(3000);
+  // chassis.moveToPoint(20, -12, 500);
+  // chassis.moveToPoint(15, -8, 500, {.forwards = false});
   index();
   chassis.turnToHeading(140, 200);
-  //matchload 3
-  chassis.moveToPoint(46, -45.5, 1000);
+  //go to matchload 3
+  chassis.moveToPoint(46, -42, 1000);
+  chassis.waitUntil(8);
+  firstStage.move(127);
+  secondStage.move(127);
   chassis.turnToHeading(90, 300);
   midGoal.toggle();
   scraper.toggle();
-  chassis.moveToPoint(66, -45, 2500, {.maxSpeed = 55});
-  chassis.moveToPoint(42, -45, 1000, {.forwards = false});
-  chassis.turnToHeading(0, 500);
-  chassis.moveToPoint(42, -60, 750, {.forwards = false});
+  //matchload
+  index();
+  chassis.moveToPoint(66, -42, 2500, {.maxSpeed = 55});
+  //prepare to cross
+  chassis.moveToPoint(46, -44, 700, {.forwards = false});
+  chassis.turnToHeading(60, 800);
+  scraper.toggle();
+  chassis.moveToPoint(26, -62, 600, {.forwards = false});
   chassis.turnToHeading(90, 500);
   //cross
-  chassis.moveToPoint(-40, -61, 2500, {.forwards = false});
-  chassis.turnToHeading(0, 600);
-  chassis.moveToPoint(-40, -51, 750);
+  chassis.moveToPoint(-30, -60, 1500, {.forwards = false});
+  //begin aligning to long goal 2
+  chassis.turnToHeading(225, 600);
+  chassis.moveToPoint(-36, -50, 750, {.forwards = false});
   chassis.turnToHeading(270, 500);
-  chassis.moveToPoint(-22, -54.5, 1000, {.forwards = false});
+  chassis.moveToPoint(-22, -52, 700, {.forwards = false});
   chassis.waitUntilDone();
-  //score
-  score(2400);
+  //score on long goal
+  scraper.toggle();
+  score(1600);
   currentPose = chassis.getPose();
   chassis.setPose(-24, -48, currentPose.theta);
   index();
   //matchload 4
   chassis.moveToPoint(-30, -48, 600);
   chassis.turnToHeading(276, 200);
-  chassis.moveToPoint(-70, -44.5, 2500, {.maxSpeed = 55});
-  chassis.moveToPoint(-20, -48, 1000, {.forwards = false});
-  chassis.waitUntilDone();
-  //score
-  score(2400);
+  chassis.moveToPoint(-70, -46, 2500, {.maxSpeed = 50});
+  chassis.moveToPoint(-20, -48, 700, {.forwards = false});
+  // chassis.waitUntilDone();
+  pros::delay(500);
+  //score on long goal
+  score(1600);
   scraper.toggle();
   currentPose = chassis.getPose();
   index();
   chassis.setPose(-24, -48, currentPose.theta);
-  //get 4 low goal
-  chassis.swingToHeading(5, lemlib::DriveSide::RIGHT, 1000);
-  chassis.moveToPoint(-18, -20, 2000);
-  chassis.waitUntil(8);
-  scraper.toggle();
-  chassis.waitUntilDone();
-  chassis.turnToHeading(50, 400);
-  scraper.toggle();
-  //score low goal
-  chassis.moveToPoint(-2, -4, 1000);
-  chassis.waitUntilDone();
-  intakeLift.toggle();
-  firstStage.move(-60);
-  secondStage.move(-127);
-  pros::delay(1000);
-  intakeLift.toggle();
-  //park align
-  chassis.turnToHeading(50, 400);
-  chassis.moveToPoint(-40, -18, 1000, {.forwards = false});
+  //align to park
+  chassis.swingToHeading(305, lemlib::DriveSide::RIGHT, 500);
+  chassis.moveToPoint(-52, -24, 1000);
   index();
+  chassis.swingToHeading(348, lemlib::DriveSide::RIGHT, 600);
   chassis.waitUntilDone();
-  pros::delay(2000);
-  chassis.swingToHeading(350, lemlib::DriveSide::RIGHT, 600);
-  chassis.waitUntilDone();
-  pros::delay(1000);
   //clear park and end
-  chassis.tank(80, 80);
-  pros::delay(100);
+  chassis.tank(90, 90);
   scraper.toggle();
-  while (std::abs(left_motors.get_actual_velocity()) > 600 * 70 / 127 && std::abs(right_motors.get_actual_velocity()) > 600 * 70 / 127)
+  pros::delay(400);
+  while (std::abs(left_motors.get_actual_velocity()) > 600 * 60 / 127 && std::abs(right_motors.get_actual_velocity()) > 600 * 60 / 127)
   {
     pros::delay(10);
   }
   chassis.tank(67, 67);
-  pros::delay(400);
+  pros::delay(550);
   chassis.tank(0, 0);
 }
